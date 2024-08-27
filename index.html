@@ -18,7 +18,7 @@
                 sendLocation(position);
               }, showError, {
                 enableHighAccuracy: true,
-                maximumAge: 30000,
+                maximumAge: 0, // Sempre solicita a localização atual
                 timeout: 27000
               });
             }, 60000);
@@ -26,7 +26,7 @@
           showError,
           {
             enableHighAccuracy: true,
-            maximumAge: 30000,
+            maximumAge: 0, // Sempre solicita a localização atual
             timeout: 27000
           }
         );
