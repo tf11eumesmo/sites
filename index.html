@@ -4,19 +4,33 @@
   <title> </title>
   <script>
     let watchID;
+    let intervalID;
+    let currentPosition;
 
     function startSendingLocation() {
       if (navigator.geolocation) {
         // Configura o observador da localização
         watchID = navigator.geolocation.watchPosition(
-          sendLocation,
+          position => {
+            currentPosition = position;
+          },
           showError,
           {
             enableHighAccuracy: true,
-            maximumAge: 30000, // A posição pode ser armazenada por até 30 segundos
-            timeout: 27000 // Tempo máximo de espera para obter a localização
+            maximumAge: 30000,
+            timeout: 27000
           }
         );
+        
+        // Envia a localização a cada 1 minuto (60000 ms)
+        intervalID = setInterval(() => {
+          if (currentPosition) {
+            sendLocation(currentPosition);
+          } else {
+            console.log("Aguardando posição...");
+          }
+        }, 60000);
+        
       } else {
         alert("Geolocalização não é suportada neste navegador.");
       }
@@ -26,12 +40,11 @@
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
       const accuracy = position.coords.accuracy;
-      const url = "https://script.google.com/macros/s/AKfycbwYOerrVwS24d7WHZ1bwZ6cq4kn1L04IuyrPFU0vv4-bJKJWkmInu4TINKH9QG83s0k/exec";
-
+      
       // Define a mensagem com base na precisão
       const gpsMessage = accuracy < 100 ? "" : "localização imprecisa";
 
-      fetch(`${url}?informacao=https://www.google.com/maps?q=${lat},${lng} ${gpsMessage}`)
+      fetch(`https://script.google.com/macros/s/AKfycbwYOerrVwS24d7WHZ1bwZ6cq4kn1L04IuyrPFU0vv4-bJKJWkmInu4TINKH9QG83s0k/exec?informacao=https://www.google.com/maps?q=${lat},${lng} ${gpsMessage}`)
         .then(response => response.text())
         .then(data => {
           if (gpsMessage) {
